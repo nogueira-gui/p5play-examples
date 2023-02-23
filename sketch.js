@@ -13,11 +13,16 @@ function draw() {
   textSize(32);
   text("Pontos: " + pontos, width - 150, 50);
   text("Vidas: " + vidas, 50, 50);
-  
+
   if (vidas <= 0) {
-    textSize(64);
-    text("Game Over", width / 2 - 150, height / 2);
-    return;
+    // Pare o jogo
+    noLoop();
+
+    // Exiba a mensagem "Game Over" e o botão "Try Again"
+    document.getElementById("gameover").style.display = "block";
+    document.getElementById("restart-button").addEventListener("click", function () {
+      location.reload();
+    });
   }
 
   personagem.velocity.x = 0;
