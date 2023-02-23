@@ -2,6 +2,7 @@ var personagem;
 var obstaculos = [];
 var pontos = 0;
 var vidas = 3;
+var ultimaRemocao = 0;
 
 function setup() {
   createCanvas(600, 400);
@@ -27,10 +28,10 @@ function draw() {
 
   personagem.velocity.x = 0;
   if (keyIsDown(LEFT_ARROW)) {
-    personagem.velocity.x = -5;
+    personagem.velocity.x = -10;
   }
   if (keyIsDown(RIGHT_ARROW)) {
-    personagem.velocity.x = 5;
+    personagem.velocity.x = 10;
   }
 
   personagem.position.x = constrain(personagem.position.x, 0, width - 25);
@@ -40,12 +41,16 @@ function draw() {
     obstaculo.velocity.y = 5;
     obstaculos.push(obstaculo);
   }
-
+  
   for (var i = 0; i < obstaculos.length; i++) {
     if (obstaculos[i].position.y > height) {
+      if (frameCount - ultimaRemocao > 60) {
+        vidas--;
+        ultimaRemocao = frameCount;
+      }
       obstaculos[i].remove();
-      vidas--;
     }
+    
     if (personagem.overlap(obstaculos[i])) {
       obstaculos[i].remove();
       pontos++;
