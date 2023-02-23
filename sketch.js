@@ -2,7 +2,7 @@ var personagem;
 var obstaculos = [];
 var pontos = 0;
 var vidas = 3;
-var ultimaRemocao = 0;
+var obstaculoUltrassouLimite = false;
 
 function setup() {
   createCanvas(600, 400);
@@ -26,12 +26,13 @@ function draw() {
     });
   }
 
-  personagem.velocity.x = 0;
-  if (keyIsDown(LEFT_ARROW)) {
+  // Verifica se está tocando na esquerda ou direita da tela
+  if (mouseX < width / 2) {
     personagem.velocity.x = -10;
-  }
-  if (keyIsDown(RIGHT_ARROW)) {
+  } else if (mouseX > width / 2) {
     personagem.velocity.x = 10;
+  } else {
+    personagem.velocity.x = 0;
   }
 
   personagem.position.x = constrain(personagem.position.x, 0, width - 25);
@@ -40,22 +41,37 @@ function draw() {
     var obstaculo = createSprite(random(width), 0, 20, 20);
     obstaculo.velocity.y = 5;
     obstaculos.push(obstaculo);
+    obstaculoUltrassouLimite = false;
   }
-  
-  for (var i = 0; i < obstaculos.length; i++) {
-    if (obstaculos[i].position.y > height) {
-      if (frameCount - ultimaRemocao > 60) {
-        vidas--;
-        ultimaRemocao = frameCount;
-      }
-      obstaculos[i].remove();
+
+  for (let i = 0; i < obstaculos.length; i++) {
+    let obstaculo = obstaculos[i];
+
+    if (obstaculo.position.y > height && !obstaculoUltrassouLimite) {
+      obstaculo.remove();
+      vidas--;
+      obstaculoUltrassouLimite = true;
     }
-    
-    if (personagem.overlap(obstaculos[i])) {
-      obstaculos[i].remove();
+
+    if (personagem.overlap(obstaculo)) {
+      obstaculo.remove();
       pontos++;
     }
   }
 
   drawSprites();
+}
+
+// Adiciona suporte a toque para dispositivos móveis
+function touchStarted() {
+  if (touches[0].x < width / 2) {
+    personagem.velocity.x = -10;
+  } else if (touches[0].x > width / 2) {
+    personagem.velocity.x = 10;
+  }
+}
+
+// Para a movimentação do personagem quando o toque é liberado
+function touchEnded() {
+  personagem.velocity.x = 0;
 }
